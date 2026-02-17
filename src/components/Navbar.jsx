@@ -22,7 +22,6 @@ const Navbar = () => {
   ];
 
   return (
-    // Outer wrapper pointer-events-none biar area transparan ga nutupin klik di web
     <motion.div className="fixed top-0 left-0 right-0 z-50 flex justify-center w-full px-4 pt-4 md:pt-6 pointer-events-none">
       
       <motion.nav 
@@ -33,12 +32,12 @@ const Navbar = () => {
         className={`
           pointer-events-auto flex items-center justify-between font-sans transition-all duration-500
           ${scrolled 
-            ? 'bg-[#0a0a0a]/80 backdrop-blur-xl border border-white/10 shadow-[0_10px_40px_rgba(0,0,0,0.5)] rounded-full py-3 px-5 md:px-8 w-full max-w-4xl' 
+            // OPTIMASI: Di HP, navbar nggak pake efek kaca blur (bg-[#0a0a0a]/95), tapi warna solid biar enteng
+            ? 'bg-[#0a0a0a]/95 md:bg-[#0a0a0a]/80 md:backdrop-blur-xl border border-white/10 shadow-[0_10px_40px_rgba(0,0,0,0.5)] rounded-full py-3 px-5 md:px-8 w-full max-w-4xl' 
             : 'bg-transparent border-transparent py-2 px-2 md:px-14 w-full max-w-[1440px]'} 
         `}
       >
         
-        {/* Logo / Personal Brand */}
         <a href="#home" className="flex items-center gap-3 group">
           <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center group-hover:border-orange-500/50 transition-colors shadow-inner">
              <Hexagon size={16} className="text-orange-500 fill-orange-500/20 group-hover:fill-orange-500 transition-colors" />
@@ -48,7 +47,6 @@ const Navbar = () => {
           </span>
         </a>
 
-        {/* Desktop Menu with Magnetic Hover Effect */}
         <div className="hidden md:flex items-center gap-2">
           {navLinks.map((item) => (
             <a 
@@ -73,14 +71,12 @@ const Navbar = () => {
           ))}
         </div>
 
-        {/* CTA Button */}
         <a 
           href="#contact" 
           className="group relative inline-flex items-center gap-2 bg-white text-black px-5 md:px-6 py-2.5 rounded-full text-xs md:text-sm font-bold overflow-hidden transition-all hover:scale-105 shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(255,255,255,0.3)]"
         >
           <span className="relative z-10">Let's Talk</span>
           <ArrowRight size={14} className="relative z-10 group-hover:translate-x-1 transition-transform" />
-          {/* Subtle Orange Glow on Hover */}
           <div className="absolute inset-0 bg-gradient-to-r from-orange-200 via-white to-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         </a>
 

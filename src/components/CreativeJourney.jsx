@@ -25,10 +25,10 @@ const CreativeJourney = () => {
   return (
     <section id="multiverse" className="py-24 md:py-32 relative font-sans bg-[#050505] overflow-hidden">
       
-      {/* Background Ambience */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-7xl pointer-events-none">
-         <div className="absolute top-1/4 right-10 w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-blue-500/5 rounded-full blur-[80px] md:blur-[120px]" />
-         <div className="absolute bottom-1/4 left-10 w-[200px] md:w-[400px] h-[200px] md:h-[400px] bg-orange-500/5 rounded-full blur-[60px] md:blur-[100px]" />
+      {/* OPTIMASI: Background Ambience dimatikan di HP (hidden md:block) */}
+      <div className="hidden md:block absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-7xl pointer-events-none z-0">
+         <div className="absolute top-1/4 right-10 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[120px]" />
+         <div className="absolute bottom-1/4 left-10 w-[400px] h-[400px] bg-orange-500/5 rounded-full blur-[100px]" />
       </div>
 
       <div className="max-w-[1440px] mx-auto px-6 md:px-20 relative z-10" ref={containerRef}>
@@ -51,7 +51,7 @@ const CreativeJourney = () => {
               <p className="text-gray-400 mt-4 text-sm md:text-lg max-w-md">A chronological record of milestones, projects, and roles.</p>
             </div>
 
-            {/* FILTER FIX: Statis, 100% responsif, nggak jebol ke kanan */}
+            {/* FILTER */}
             <div className="w-full lg:w-auto mt-4 lg:mt-0 z-20">
               <div className="flex flex-wrap items-center bg-white/5 p-1.5 rounded-2xl md:rounded-full border border-white/10 w-full gap-1 sm:gap-0">
                 {[
@@ -98,18 +98,19 @@ const CreativeJourney = () => {
                       transition={{ duration: 0.4 }}
                       className="relative pl-6 sm:pl-10 md:pl-16 group"
                     >
-                      <div className="absolute left-[-16px] md:left-[-25px] top-2 w-8 h-8 md:w-12 md:h-12 rounded-full bg-[#050505] border border-white/20 flex items-center justify-center z-20 group-hover:scale-110 transition-transform duration-300">
+                      <div className="absolute left-[-16px] md:left-[-25px] top-2 w-8 h-8 md:w-12 md:h-12 rounded-full bg-[#050505] border border-white/20 flex items-center justify-center z-20 md:group-hover:scale-110 transition-transform duration-300">
                         <div className={`w-2 h-2 md:w-3 md:h-3 rounded-full ${item.color} shadow-[0_0_10px_currentColor]`} />
                       </div>
 
-                      <div className="relative p-5 sm:p-6 md:p-8 rounded-2xl md:rounded-3xl bg-white/[0.02] border border-white/5 backdrop-blur-md group-hover:bg-white/[0.04] group-hover:border-white/20 transition-all duration-300 group-hover:translate-x-1 md:group-hover:translate-x-2 overflow-hidden flex flex-col md:flex-row gap-4 md:gap-6 md:items-center">
-                        <div className={`absolute left-0 top-0 bottom-0 w-1 ${item.color} opacity-50 group-hover:opacity-100 transition-opacity`} />
+                      {/* OPTIMASI: Backdrop-blur dimatikan di HP */}
+                      <div className="relative p-5 sm:p-6 md:p-8 rounded-2xl md:rounded-3xl bg-[#111] md:bg-white/[0.02] border border-white/5 md:backdrop-blur-md md:group-hover:bg-white/[0.04] md:group-hover:border-white/20 transition-all duration-300 md:group-hover:translate-x-2 overflow-hidden flex flex-col md:flex-row gap-4 md:gap-6 md:items-center">
+                        <div className={`absolute left-0 top-0 bottom-0 w-1 ${item.color} opacity-50 md:group-hover:opacity-100 transition-opacity`} />
                         
                         <div className="md:w-1/3 shrink-0">
                           <span className={`inline-flex items-center gap-2 px-2.5 py-1 rounded-lg text-[10px] md:text-xs font-bold uppercase tracking-wider mb-2 md:mb-3 border bg-white/5 ${textColor} border-white/10`}>
                             {item.year}
                           </span>
-                          <h3 className="text-lg md:text-2xl font-bold text-white leading-tight mb-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-gray-400 transition-colors">
+                          <h3 className="text-lg md:text-2xl font-bold text-white leading-tight mb-2 md:group-hover:text-transparent md:group-hover:bg-clip-text md:group-hover:bg-gradient-to-r md:group-hover:from-white md:group-hover:to-gray-400 transition-colors">
                             {item.title}
                           </h3>
                         </div>
@@ -126,7 +127,7 @@ const CreativeJourney = () => {
                           </p>
                         </div>
 
-                        <div className={`absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-500 bg-gradient-to-r ${gradientColor}/10 to-transparent pointer-events-none`} />
+                        <div className={`hidden md:block absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-500 bg-gradient-to-r ${gradientColor}/10 to-transparent pointer-events-none`} />
                       </div>
                     </motion.div>
                   );

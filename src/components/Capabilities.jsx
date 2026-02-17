@@ -53,29 +53,26 @@ const getTechIcon = (tech) => {
   return <Code size={16} className="text-blue-400" />;
 };
 
-// --- VIDEO PLAYER COMPONENT ---
-// --- VIDEO PLAYER COMPONENT (OPTIMIZED BUAT MOBILE) ---
+// --- OPTIMIZED VIDEO PLAYER ---
 const SegmentedVideo = ({ src, start, end, className }) => {
   const videoRef = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
   
-  // Fitur "Mata-mata": Ngecek videonya lagi ada di layar atau nggak
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => setIsVisible(entry.isIntersecting),
-      { threshold: 0.1 } // Kalau 10% video kelihatan, baru nyala
+      { threshold: 0.1 } 
     );
     if (videoRef.current) observer.observe(videoRef.current);
     return () => observer.disconnect();
   }, []);
 
-  // Muter atau Pause otomatis berdasarkan posisi layar
   useEffect(() => {
     if (videoRef.current) {
       if (isVisible) {
-        videoRef.current.play().catch(() => {}); // Play kalau kelihatan
+        videoRef.current.play().catch(() => {});
       } else {
-        videoRef.current.pause(); // Pause kalau di-scroll lewat
+        videoRef.current.pause(); 
       }
     }
   }, [isVisible]);
@@ -105,7 +102,7 @@ const SegmentedVideo = ({ src, start, end, className }) => {
       className={className || "w-full h-full object-cover"} 
       muted 
       playsInline 
-      loop // Tambahan aman buat mobile
+      loop 
       onTimeUpdate={handleTimeUpdate} 
       onEnded={handleEnded}
     />
@@ -124,16 +121,10 @@ const Carousel3D = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const [ornaments] = useState([
-    { id: 1, Icon: Heart, color: "text-red-500", x: "10%", y: "20%", size: 32, delay: 0 },
-    { id: 2, Icon: MessageCircle, color: "text-blue-400", x: "85%", y: "15%", size: 28, delay: 1.5 },
-    { id: 3, Icon: Zap, color: "text-yellow-400", x: "80%", y: "75%", size: 36, delay: 0.5 },
-  ]);
-
   const items = [
-    { id: 0, title: "The Teaser", role: "Hype Builder", color: "text-blue-400", link: "https://www.instagram.com/reel/C_r0tGIPNn0/", views: "20.6k", likes: "188", src: topc },
-    { id: 1, title: "Event Recap", role: "Main Highlight", color: "text-orange-400", link: "https://www.instagram.com/reel/DAFOH68PjF9/", views: "16.3k", likes: "132", src: bestc },
-    { id: 2, title: "BTS Moments", role: "Engagement", color: "text-purple-400", link: "https://www.instagram.com/reel/DBArGA1PjhI/", views: "13.3k", likes: "128", src: popc },
+    { id: 0, title: "The Teaser", role: "Hype Builder", color: "text-blue-400", link: "https://www.instagram.com/reel/C_r0tGIPNn0/", src: topc },
+    { id: 1, title: "Event Recap", role: "Main Highlight", color: "text-orange-400", link: "https://www.instagram.com/reel/DAFOH68PjF9/", src: bestc },
+    { id: 2, title: "BTS Moments", role: "Engagement", color: "text-purple-400", link: "https://www.instagram.com/reel/DBArGA1PjhI/", src: popc },
   ];
 
   useEffect(() => {
@@ -156,16 +147,25 @@ const Carousel3D = () => {
 
   return (
     <div className="relative w-full h-[450px] md:h-[600px] flex items-center justify-center perspective-1000 overflow-hidden md:overflow-visible">
-      <div className="absolute inset-0 overflow-hidden pointer-events-none select-none z-0">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-orange-500/10 rounded-full blur-[80px] md:blur-[120px]" />
-      </div>
+      {!isMobile && (
+        <div className="absolute inset-0 overflow-hidden pointer-events-none select-none z-0">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-orange-500/10 rounded-full blur-[80px] md:blur-[120px]" />
+        </div>
+      )}
 
       {items.map((item, index) => {
         const position = getPosition(index);
         return (
           <motion.div key={item.id} initial={false} animate={position} variants={variants} transition={{ type: "spring", stiffness: 120, damping: 20 }} onClick={() => { if (index === activeIndex) window.open(item.link, '_blank'); else setActiveIndex(index); }} className="absolute w-[200px] md:w-[280px] aspect-[9/16] bg-black rounded-3xl md:rounded-[3rem] border-4 md:border-[8px] border-gray-800 overflow-hidden shadow-2xl transition-colors">
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-16 md:w-28 h-4 md:h-6 bg-gray-800 rounded-b-lg z-20" />
-            <video className="w-full h-full object-cover" autoPlay muted loop playsInline><source src={item.src} type="video/mp4" /></video>
+            
+            {/* HARD PERFORMANCE FIX: Hanya load 1 video di tengah buat HP */}
+            {(position === 'center' || !isMobile) ? (
+              <video className="w-full h-full object-cover" autoPlay muted loop playsInline><source src={item.src} type="video/mp4" /></video>
+            ) : (
+              <div className="w-full h-full bg-[#0a0a0a]" />
+            )}
+
             <motion.div animate={{ opacity: position === 'center' ? 0 : 0.7 }} className="absolute inset-0 bg-black pointer-events-none" />
             {position === 'center' && (
               <div className="absolute bottom-0 w-full p-4 md:p-6 bg-gradient-to-t from-black/95 via-black/70 to-transparent pt-12">
@@ -182,6 +182,15 @@ const Carousel3D = () => {
 // --- MAIN COMPONENT ---
 const Capabilities = ({ setActiveTab }) => {
   const [activeMode, setActiveMode] = useState('leadership');
+  
+  // THE REAL PERFORMANCE HERO: State pendeteksi layar
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    handleResize(); // Cek awal
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const handleNavigate = (tab) => {
     if (setActiveTab) setActiveTab(tab);
@@ -219,7 +228,6 @@ const Capabilities = ({ setActiveTab }) => {
             </p>
           </div>
           
-          {/* FILTER FIX: Statis, 100% responsif, nggak jebol ke kanan */}
           <div className="w-full lg:w-auto mt-4 lg:mt-0 z-20">
             <div className="flex flex-wrap items-center bg-white/5 p-1.5 rounded-2xl md:rounded-full border border-white/10 w-full gap-1 sm:gap-0">
               {[
@@ -249,25 +257,21 @@ const Capabilities = ({ setActiveTab }) => {
         <div className="min-h-[800px]">
           <AnimatePresence mode="wait">
             
-            {/* === LEADERSHIP MODE (FULL) === */}
+            {/* === LEADERSHIP MODE === */}
             {activeMode === 'leadership' && (
               <motion.div key="leadership" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.4 }} className="space-y-40">
                 
-                {/* 1. PPIF (VP & Creative Lead) */}
                 <div className="relative group">
-                  <div className="absolute -left-10 top-20 w-[400px] h-[400px] bg-purple-600/10 rounded-full blur-[120px] pointer-events-none transition-opacity duration-700 opacity-50 group-hover:opacity-100" />
+                  {!isMobile && <div className="absolute -left-10 top-20 w-[400px] h-[400px] bg-purple-600/10 rounded-full blur-[120px] pointer-events-none transition-opacity duration-700 opacity-50 group-hover:opacity-100" />}
                   <div className="grid md:grid-cols-12 gap-8 items-start mb-12 relative z-10">
                     <div className="md:col-span-5 md:sticky md:top-32 pr-4">
-                      <div className="inline-flex items-center gap-2 bg-purple-500/10 text-purple-400 px-4 py-2 rounded-full text-xs font-bold tracking-wide uppercase mb-6 border border-purple-500/20 shadow-[0_0_15px_rgba(168,85,247,0.15)]">
-                        <Star size={14} fill="currentColor" /> VP & Creative Lead
-                      </div>
+                      <div className="inline-flex items-center gap-2 bg-purple-500/10 text-purple-400 px-4 py-2 rounded-full text-xs font-bold tracking-wide uppercase mb-6 border border-purple-500/20"><Star size={14} fill="currentColor" /> VP & Creative Lead</div>
                       <h3 className="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight">Shaping the Culture of <br/> <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">Student Orientation.</span></h3>
-                      <p className="text-gray-400 text-lg leading-relaxed mb-8">A dedicated two-year tenure leading the orientation ecosystem. I bridged the gap between <b>strategic leadership</b> and <b>creative execution</b>—managing the visual identity, public relations, and mentor development.</p>
+                      <p className="text-gray-400 text-lg leading-relaxed mb-8">A dedicated two-year tenure leading the orientation ecosystem. I bridged the gap between <b>strategic leadership</b> and <b>creative execution</b>.</p>
                       <ul className="space-y-4 mb-8">
                         {['Creative & PR Ecosystem Director', 'Mentor & Public Speaking Trainer', '2-Year Strategic Stewardship'].map((item, i) => (
                           <li key={i} className="flex items-center gap-4 text-gray-300 bg-white/[0.02] border border-white/5 p-3 rounded-2xl">
-                            <div className="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center shrink-0"><div className="w-2.5 h-2.5 rounded-full bg-purple-400 shadow-[0_0_10px_rgba(192,132,252,0.8)]" /></div>
-                            <span className="font-medium text-sm">{item}</span>
+                            <div className="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center shrink-0"><div className="w-2.5 h-2.5 rounded-full bg-purple-400" /></div><span className="font-medium text-sm">{item}</span>
                           </li>
                         ))}
                       </ul>
@@ -276,7 +280,7 @@ const Capabilities = ({ setActiveTab }) => {
                       {[plenoImg, random4, random2, random5, random3, random6].map((img, i) => (
                         <div key={i} className="min-w-[85%] md:min-w-[350px] aspect-[4/5] rounded-[2rem] bg-[#111] border border-white/10 overflow-hidden relative group/card snap-center shadow-2xl hover:border-purple-500/30 transition-all duration-500">
                           <img src={img} alt={`PPIF ${i}`} className="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700 opacity-90 group-hover/card:opacity-100" />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-500" />
+                          {!isMobile && <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-500" />}
                         </div>
                       ))}
                     </div>
@@ -296,9 +300,8 @@ const Capabilities = ({ setActiveTab }) => {
                   </div>
                 </div>
 
-                {/* 2. PR & EVENT (Infinite UMN) */}
                 <div className="relative group">
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-orange-600/10 rounded-full blur-[150px] pointer-events-none transition-opacity duration-700 opacity-50 group-hover:opacity-100" />
+                  {!isMobile && <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-orange-600/10 rounded-full blur-[150px] pointer-events-none transition-opacity duration-700 opacity-50 group-hover:opacity-100" />}
                   <div className="grid md:grid-cols-12 gap-12 items-center relative z-10">
                     <div className="order-2 md:order-1 md:col-span-7 py-10 relative flex justify-center"><Carousel3D /></div>
                     <div className="order-1 md:order-2 md:col-span-5 md:sticky md:top-32 pl-4">
@@ -316,9 +319,8 @@ const Capabilities = ({ setActiveTab }) => {
                   </div>
                 </div>
 
-                {/* 3. MENTORING */}
                 <div className="relative group">
-                  <div className="absolute -right-10 top-20 w-[400px] h-[400px] bg-green-600/10 rounded-full blur-[120px] pointer-events-none transition-opacity duration-700 opacity-50 group-hover:opacity-100" />
+                  {!isMobile && <div className="absolute -right-10 top-20 w-[400px] h-[400px] bg-green-600/10 rounded-full blur-[120px] pointer-events-none transition-opacity duration-700 opacity-50 group-hover:opacity-100" />}
                   <div className="grid md:grid-cols-12 gap-8 items-start mb-12 relative z-10">
                     <div className="md:col-span-5 md:sticky md:top-32 pr-4">
                       <div className="inline-flex items-center gap-2 bg-green-500/10 text-green-400 px-4 py-2 rounded-full text-xs font-bold tracking-wide uppercase mb-6 border border-green-500/20 shadow-[0_0_15px_rgba(34,197,94,0.15)]"><Heart size={14} fill="currentColor" /> Mentor Division (2 Years)</div>
@@ -336,7 +338,7 @@ const Capabilities = ({ setActiveTab }) => {
                       {[random11, random7, random10, random13, random14, random15, random8, random9, random12].map((img, i) => (
                         <div key={i} className="min-w-[85%] md:min-w-[350px] aspect-[4/5] rounded-[2rem] bg-[#111] border border-white/10 overflow-hidden relative group/card snap-center shadow-2xl hover:border-green-500/30 transition-all duration-500">
                           <img src={img} alt="Mentoring" className="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700 opacity-90 group-hover/card:opacity-100" />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-500" />
+                          {!isMobile && <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-500" />}
                         </div>
                       ))}
                     </div>
@@ -353,9 +355,8 @@ const Capabilities = ({ setActiveTab }) => {
                   </div>
                 </div>
 
-                {/* 4. OFFLINE EVENT MANAGEMENT (Hotwheels) */}
                 <div className="relative group pt-12">
-                  <div className="absolute top-1/2 left-0 w-[500px] h-[500px] bg-red-600/10 rounded-full blur-[150px] -translate-y-1/2 pointer-events-none transition-opacity duration-700 opacity-50 group-hover:opacity-100" />
+                  {!isMobile && <div className="absolute top-1/2 left-0 w-[500px] h-[500px] bg-red-600/10 rounded-full blur-[150px] -translate-y-1/2 pointer-events-none transition-opacity duration-700 opacity-50 group-hover:opacity-100" />}
 
                   <div className="grid md:grid-cols-12 gap-8 items-start relative z-10">
                     <div className="md:col-span-5 md:sticky md:top-32 pr-4">
@@ -377,22 +378,23 @@ const Capabilities = ({ setActiveTab }) => {
                     <div className="md:col-span-7 flex gap-4 md:gap-8 relative z-10 pt-10 px-4 md:px-0">
                       <div className="w-1/2 rounded-[2.5rem] overflow-hidden border border-white/10 aspect-[4/5] group/card shadow-[0_0_40px_rgba(239,68,68,0.1)] relative hover:border-red-500/30 hover:-translate-y-2 transition-all duration-500">
                         <img src={hot1} alt="Hotwheels 1" className="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-500" />
+                        {!isMobile && <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-500" />}
                       </div>
                       <div className="w-1/2 rounded-[2.5rem] overflow-hidden border border-white/10 aspect-[4/5] group/card shadow-[0_0_40px_rgba(239,68,68,0.1)] mt-16 md:mt-24 relative hover:border-red-500/30 hover:-translate-y-2 transition-all duration-500">
                         <img src={hot2} alt="Hotwheels 2" className="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-500" />
+                        {!isMobile && <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-500" />}
                       </div>
                     </div>
                   </div>
                 </div>
 
-                {/* 5. MANAGED ACCOUNTS */}
                 <div className="relative py-24 md:py-32 mt-20 overflow-hidden rounded-[2rem] md:rounded-[3rem] border border-white/5 bg-[#0a0a0a]">
-                  <div className="absolute inset-0 pointer-events-none">
-                     <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,black,transparent)]" />
-                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[15vw] font-black text-white/[0.015] whitespace-nowrap select-none tracking-tighter">IMPACT</div>
-                  </div>
+                  {!isMobile && (
+                    <div className="absolute inset-0 pointer-events-none">
+                       <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,black,transparent)]" />
+                       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[15vw] font-black text-white/[0.015] whitespace-nowrap select-none tracking-tighter">IMPACT</div>
+                    </div>
+                  )}
 
                   <div className="relative z-10 text-center mb-16 md:mb-20 px-4">
                     <h3 className="text-3xl md:text-5xl font-bold text-white mb-4 tracking-tight">Managed Accounts</h3>
@@ -446,9 +448,9 @@ const Capabilities = ({ setActiveTab }) => {
                     </div>
 
                     <div className="w-full rounded-[2rem] bg-gradient-to-br from-[#0c0e12] to-[#050505] border border-white/[0.05] p-2 md:p-4 relative overflow-hidden shadow-xl group-hover:border-blue-500/20 group-hover:shadow-[0_0_40px_rgba(59,130,246,0.1)] transition-all duration-500">
-                       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60%] h-[60%] bg-blue-500/10 rounded-full blur-[100px] pointer-events-none group-hover:bg-blue-500/20 transition-colors duration-700 z-0" />
+                       {!isMobile && <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60%] h-[60%] bg-blue-500/10 rounded-full blur-[100px] pointer-events-none group-hover:bg-blue-500/20 transition-colors duration-700 z-0" />}
                        <div className="relative w-full aspect-video rounded-xl overflow-hidden border border-white/5 bg-[#050505] flex items-center justify-center">
-                         <img src={item.image} alt="" className="absolute inset-0 w-full h-full object-cover scale-110 blur-2xl opacity-40 group-hover:opacity-60 transition-opacity duration-700 pointer-events-none z-0" aria-hidden="true" />
+                         {!isMobile && <img src={item.image} alt="" className="absolute inset-0 w-full h-full object-cover scale-110 blur-2xl opacity-40 group-hover:opacity-60 transition-opacity duration-700 pointer-events-none z-0" aria-hidden="true" />}
                          <div className="absolute inset-0 bg-black/30 z-0 pointer-events-none" />
                          <img src={item.image} alt={item.title} className="w-full h-full object-cover md:object-contain drop-shadow-[0_0_40px_rgba(0,0,0,0.6)] group-hover:scale-[1.02] transition-transform duration-700 ease-out relative z-10" />
                        </div>
@@ -475,13 +477,12 @@ const Capabilities = ({ setActiveTab }) => {
               </motion.div>
             )}
 
-            {/* === CREATIVE MODE (FOCUSED: GAMING INTROS) === */}
+            {/* === CREATIVE MODE === */}
             {activeMode === 'creative' && (
               <motion.div key="creative" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.4 }} className="space-y-24 pb-20 mt-10">
                 {creativeProjects.map((item, i) => (
                   <div key={i} className="flex flex-col group relative">
                     
-                    {/* Header Project */}
                     <div className="mb-6">
                        <div className="flex items-center gap-3 mb-3">
                           <div className="h-[2px] w-6 bg-purple-600 shadow-[0_0_8px_rgba(168,85,247,0.8)]" />
@@ -491,19 +492,21 @@ const Capabilities = ({ setActiveTab }) => {
                        <p className="text-gray-400 text-sm md:text-base leading-relaxed max-w-3xl">{item.desc}</p>
                     </div>
 
-                    {/* Clean Media Frame (Mirip YouTube Player) */}
                     <div className="w-full rounded-[1.5rem] md:rounded-[2rem] bg-[#0A0A0A] border border-white/10 p-2 md:p-3 relative overflow-hidden shadow-xl group-hover:border-purple-500/30 transition-all duration-500">
-                       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[50%] h-[50%] bg-purple-500/10 rounded-full blur-[80px] pointer-events-none group-hover:bg-purple-500/20 transition-colors duration-700 z-0" />
+                       {!isMobile && <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[50%] h-[50%] bg-purple-500/10 rounded-full blur-[80px] pointer-events-none group-hover:bg-purple-500/20 transition-colors duration-700 z-0" />}
                        
                        <div className="relative w-full aspect-video rounded-xl md:rounded-2xl overflow-hidden border border-white/5 bg-black flex items-center justify-center shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
                          {item.video ? (
                            <>
-                             <SegmentedVideo 
-                               src={item.video} 
-                               start={item.start || 0} 
-                               end={item.end || 9999} 
-                               className="absolute inset-0 w-full h-full object-cover scale-110 blur-2xl opacity-30 group-hover:opacity-50 transition-opacity duration-700 pointer-events-none z-0"
-                             />
+                             {/* Double Video Shadow cuma diload di PC */}
+                             {!isMobile && (
+                               <SegmentedVideo 
+                                 src={item.video} 
+                                 start={item.start || 0} 
+                                 end={item.end || 9999} 
+                                 className="absolute inset-0 w-full h-full object-cover scale-110 blur-2xl opacity-30 group-hover:opacity-50 transition-opacity duration-700 pointer-events-none z-0"
+                               />
+                             )}
                              <div className="absolute inset-0 bg-black/40 z-0 pointer-events-none" />
                              
                              <SegmentedVideo 
@@ -515,7 +518,7 @@ const Capabilities = ({ setActiveTab }) => {
                            </>
                          ) : (
                            <>
-                             <img src={item.image} alt="" className="absolute inset-0 w-full h-full object-cover scale-110 blur-2xl opacity-30 group-hover:opacity-50 transition-opacity duration-700 pointer-events-none z-0" aria-hidden="true" />
+                             {!isMobile && <img src={item.image} alt="" className="absolute inset-0 w-full h-full object-cover scale-110 blur-2xl opacity-30 group-hover:opacity-50 transition-opacity duration-700 pointer-events-none z-0" aria-hidden="true" />}
                              <div className="absolute inset-0 bg-black/40 z-0 pointer-events-none" />
                              <img src={item.image} alt={item.title} className="w-full h-full object-cover md:object-contain drop-shadow-[0_0_40px_rgba(0,0,0,0.8)] transition-transform duration-700 relative z-10" />
                            </>
@@ -523,7 +526,6 @@ const Capabilities = ({ setActiveTab }) => {
                        </div>
                     </div>
 
-                    {/* Bottom Action Bar */}
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-5 gap-4">
                        <div className="flex flex-wrap gap-2 md:gap-3">
                          {item.tech.map((t, idx) => (
@@ -556,18 +558,24 @@ const Capabilities = ({ setActiveTab }) => {
         {/* --- BOTTOM CTA --- */}
         <div className="mt-20 md:mt-40 relative py-24 md:py-40 overflow-hidden w-full rounded-3xl md:rounded-none">
           <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-             <div className="absolute w-[300px] md:w-[600px] h-[300px] md:h-[600px] bg-purple-600/10 rounded-full blur-[80px] md:blur-[150px] animate-pulse-slow" />
-             <div className="absolute w-[200px] md:w-[400px] h-[200px] md:h-[400px] bg-orange-500/10 rounded-full blur-[60px] md:blur-[100px] mix-blend-overlay" />
-             <div className="absolute w-[400px] md:w-[800px] h-[400px] md:h-[800px] border border-white/5 rounded-full animate-[spin_60s_linear_infinite] opacity-70" />
-             <div className="absolute w-[600px] md:w-[1100px] h-[600px] md:h-[1100px] border border-purple-500/10 rounded-full animate-[spin_40s_linear_infinite_reverse] opacity-50" />
-             <div className="absolute w-[800px] md:w-[1400px] h-[800px] md:h-[1400px] border border-orange-500/5 rounded-full animate-[spin_80s_linear_infinite] opacity-30" />
+             
+             {/* OPTIMASI: Efek muter-muter raksasa dihapus total pas di HP */}
+             {!isMobile && (
+               <>
+                 <div className="absolute w-[300px] md:w-[600px] h-[300px] md:h-[600px] bg-purple-600/10 rounded-full blur-[80px] md:blur-[150px] animate-pulse-slow" />
+                 <div className="absolute w-[200px] md:w-[400px] h-[200px] md:h-[400px] bg-orange-500/10 rounded-full blur-[60px] md:blur-[100px] mix-blend-overlay" />
+                 <div className="absolute w-[400px] md:w-[800px] h-[400px] md:h-[800px] border border-white/5 rounded-full animate-[spin_60s_linear_infinite] opacity-70" />
+                 <div className="absolute w-[600px] md:w-[1100px] h-[600px] md:h-[1100px] border border-purple-500/10 rounded-full animate-[spin_40s_linear_infinite_reverse] opacity-50" />
+                 <div className="absolute w-[800px] md:w-[1400px] h-[800px] md:h-[1400px] border border-orange-500/5 rounded-full animate-[spin_80s_linear_infinite] opacity-30" />
+               </>
+             )}
 
-             {floatingDebris.map((item) => {
+             {!isMobile && floatingDebris.map((item) => {
                const { Icon, id, x, y, duration, left, top, size } = item;
                return (
                  <motion.div 
                    key={id} 
-                   className="absolute text-white/20 hidden md:block" 
+                   className="absolute text-white/20" 
                    initial={{ x: 0, y: 0, rotate: 0 }} 
                    animate={{ x: x, y: y, rotate: [0, 180, 360] }} 
                    transition={{ duration, repeat: Infinity, ease: "linear" }} 
