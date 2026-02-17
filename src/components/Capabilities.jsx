@@ -53,10 +53,13 @@ const getTechIcon = (tech) => {
   return <Code size={16} className="text-blue-400" />;
 };
 
-// --- OPTIMIZED VIDEO PLAYER ---
-const SegmentedVideo = ({ src, start, end, className }) => {
+// --- OPTIMIZED VIDEO PLAYER (CINEMATIC FADE-IN, 0% GLITCH) ---
+const SegmentedVideo = ({ src, start = 0, end = 9999, className }) => {
   const videoRef = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
+  
+  // State baru: buat ngasih tau "Eh videonya udah mendarat di detik 8 belum?"
+  const [isReady, setIsReady] = useState(false); 
   
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -68,19 +71,28 @@ const SegmentedVideo = ({ src, start, end, className }) => {
   }, []);
 
   useEffect(() => {
-    if (videoRef.current) {
+    // Cuma play kalau videonya udah kelihatan DAN udah siap di detik 8
+    if (videoRef.current && isReady) {
       if (isVisible) {
         videoRef.current.play().catch(() => {});
       } else {
         videoRef.current.pause(); 
       }
     }
-  }, [isVisible]);
+  }, [isVisible, isReady]);
 
-  useEffect(() => { 
-    if (videoRef.current) videoRef.current.currentTime = start; 
-  }, [start]);
-  
+  const handleLoadedMetadata = () => {
+    if (videoRef.current) {
+      // 1. Video keload, langsung paksa pindah ke detik yang dituju
+      videoRef.current.currentTime = start;
+    }
+  };
+
+  const handleSeeked = () => {
+    // 2. Event ini otomatis kepanggil KALAU video sukses mendarat di detik tersebut
+    if (!isReady) setIsReady(true);
+  };
+
   const handleTimeUpdate = () => {
     if (videoRef.current && videoRef.current.currentTime >= end) {
       videoRef.current.currentTime = start;
@@ -99,10 +111,15 @@ const SegmentedVideo = ({ src, start, end, className }) => {
     <video 
       ref={videoRef} 
       src={src} 
-      className={className || "w-full h-full object-cover"} 
+      // 3. JURUSNYA DI SINI: Kalau belum ready (isReady = false), videonya transparan (opacity-0).
+      // Begitu ready, dia fade in (opacity-100) pelan-pelan selama 0.7 detik (duration-700)
+      className={`${className} transition-opacity duration-700 ease-out ${isReady ? 'opacity-100' : 'opacity-0'}`} 
       muted 
       playsInline 
       loop 
+      preload="auto"
+      onLoadedMetadata={handleLoadedMetadata}
+      onSeeked={handleSeeked}
       onTimeUpdate={handleTimeUpdate} 
       onEnded={handleEnded}
     />
