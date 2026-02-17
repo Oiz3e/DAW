@@ -3,10 +3,11 @@
 /* cspell:disable */
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles } from 'lucide-react';
+import { Hexagon, ArrowRight } from 'lucide-react';
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
+  const [hoveredPath, setHoveredPath] = useState(null);
   
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -14,45 +15,77 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const navLinks = [
+    { name: 'Home', href: '#home' },
+    { name: 'Multiverse', href: '#multiverse' },
+    { name: 'Contact', href: '#contact' }
+  ];
+
   return (
-    <motion.nav 
-      initial={{ y: -100, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.6 }}
-      className={`
-        fixed top-0 left-0 right-0 z-50 w-full font-sans transition-all duration-500
-        ${scrolled 
-          ? 'bg-black/80 backdrop-blur-xl border-b border-white/10 shadow-lg py-4' 
-          : 'bg-transparent border-b border-transparent py-6'} 
-      `}
-    >
-      <div className="max-w-[1440px] mx-auto px-6 md:px-20 flex items-center justify-between">
+    // Outer wrapper pointer-events-none biar area transparan ga nutupin klik di web
+    <motion.div className="fixed top-0 left-0 right-0 z-50 flex justify-center w-full px-4 pt-4 md:pt-6 pointer-events-none">
+      
+      <motion.nav 
+        layout
+        initial={{ y: -100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+        className={`
+          pointer-events-auto flex items-center justify-between font-sans transition-all duration-500
+          ${scrolled 
+            ? 'bg-[#0a0a0a]/80 backdrop-blur-xl border border-white/10 shadow-[0_10px_40px_rgba(0,0,0,0.5)] rounded-full py-3 px-5 md:px-8 w-full max-w-4xl' 
+            : 'bg-transparent border-transparent py-2 px-2 md:px-14 w-full max-w-[1440px]'} 
+        `}
+      >
         
-        {/* Logo */}
-        <a href="#home" className="text-lg font-semibold flex items-center gap-2 text-white tracking-tight z-20">
-          <Sparkles size={18} className="text-orange-500 fill-orange-500" />
-          Hire me!
+        {/* Logo / Personal Brand */}
+        <a href="#home" className="flex items-center gap-3 group">
+          <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center group-hover:border-orange-500/50 transition-colors shadow-inner">
+             <Hexagon size={16} className="text-orange-500 fill-orange-500/20 group-hover:fill-orange-500 transition-colors" />
+          </div>
+          <span className="text-sm md:text-base font-bold text-white tracking-widest uppercase hidden sm:block">
+            OWI!<span className="text-orange-500">.</span>
+          </span>
         </a>
 
-        {/* Desktop Menu */}
-        <div className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-300 absolute left-1/2 -translate-x-1/2">
-          {['Home', 'Multiverse', 'Contact'].map((item) => (
-            <a key={item} href={`#${item.toLowerCase()}`} className="hover:text-white transition-colors relative group">
-              {item}
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-500 transition-all group-hover:w-full" />
+        {/* Desktop Menu with Magnetic Hover Effect */}
+        <div className="hidden md:flex items-center gap-2">
+          {navLinks.map((item) => (
+            <a 
+              key={item.name} 
+              href={item.href} 
+              onMouseEnter={() => setHoveredPath(item.name)}
+              onMouseLeave={() => setHoveredPath(null)}
+              className="relative px-5 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors rounded-full"
+            >
+              <span className="relative z-10">{item.name}</span>
+              {hoveredPath === item.name && (
+                <motion.div
+                  layoutId="navHover"
+                  className="absolute inset-0 bg-white/10 rounded-full z-0"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                />
+              )}
             </a>
           ))}
         </div>
 
         {/* CTA Button */}
-        <div className="z-20">
-          <a href="#contact" className="bg-white text-black px-6 py-2 rounded-full text-sm font-bold hover:bg-gray-200 transition-colors">
-            Let's Talk!
-          </a>
-        </div>
+        <a 
+          href="#contact" 
+          className="group relative inline-flex items-center gap-2 bg-white text-black px-5 md:px-6 py-2.5 rounded-full text-xs md:text-sm font-bold overflow-hidden transition-all hover:scale-105 shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(255,255,255,0.3)]"
+        >
+          <span className="relative z-10">Let's Talk</span>
+          <ArrowRight size={14} className="relative z-10 group-hover:translate-x-1 transition-transform" />
+          {/* Subtle Orange Glow on Hover */}
+          <div className="absolute inset-0 bg-gradient-to-r from-orange-200 via-white to-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        </a>
 
-      </div>
-    </motion.nav>
+      </motion.nav>
+    </motion.div>
   );
 };
 
