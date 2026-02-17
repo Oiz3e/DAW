@@ -44,7 +44,7 @@ const Navbar = () => {
              <Hexagon size={16} className="text-orange-500 fill-orange-500/20 group-hover:fill-orange-500 transition-colors" />
           </div>
           <span className="text-sm md:text-base font-bold text-white tracking-widest uppercase hidden sm:block">
-            OWI!<span className="text-orange-500">.</span>
+            DAW!<span className="text-orange-500">.</span>
           </span>
         </a>
 
