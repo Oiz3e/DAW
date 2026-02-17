@@ -54,9 +54,32 @@ const getTechIcon = (tech) => {
 };
 
 // --- VIDEO PLAYER COMPONENT ---
+// --- VIDEO PLAYER COMPONENT (OPTIMIZED BUAT MOBILE) ---
 const SegmentedVideo = ({ src, start, end, className }) => {
   const videoRef = useRef(null);
+  const [isVisible, setIsVisible] = useState(false);
   
+  // Fitur "Mata-mata": Ngecek videonya lagi ada di layar atau nggak
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsVisible(entry.isIntersecting),
+      { threshold: 0.1 } // Kalau 10% video kelihatan, baru nyala
+    );
+    if (videoRef.current) observer.observe(videoRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  // Muter atau Pause otomatis berdasarkan posisi layar
+  useEffect(() => {
+    if (videoRef.current) {
+      if (isVisible) {
+        videoRef.current.play().catch(() => {}); // Play kalau kelihatan
+      } else {
+        videoRef.current.pause(); // Pause kalau di-scroll lewat
+      }
+    }
+  }, [isVisible]);
+
   useEffect(() => { 
     if (videoRef.current) videoRef.current.currentTime = start; 
   }, [start]);
@@ -64,14 +87,14 @@ const SegmentedVideo = ({ src, start, end, className }) => {
   const handleTimeUpdate = () => {
     if (videoRef.current && videoRef.current.currentTime >= end) {
       videoRef.current.currentTime = start;
-      videoRef.current.play();
+      videoRef.current.play().catch(() => {});
     }
   };
 
   const handleEnded = () => {
     if (videoRef.current) {
       videoRef.current.currentTime = start;
-      videoRef.current.play();
+      videoRef.current.play().catch(() => {});
     }
   };
 
@@ -80,9 +103,9 @@ const SegmentedVideo = ({ src, start, end, className }) => {
       ref={videoRef} 
       src={src} 
       className={className || "w-full h-full object-cover"} 
-      autoPlay 
       muted 
       playsInline 
+      loop // Tambahan aman buat mobile
       onTimeUpdate={handleTimeUpdate} 
       onEnded={handleEnded}
     />
@@ -544,7 +567,7 @@ const Capabilities = ({ setActiveTab }) => {
                return (
                  <motion.div 
                    key={id} 
-                   className="absolute text-white/20" 
+                   className="absolute text-white/20 hidden md:block" 
                    initial={{ x: 0, y: 0, rotate: 0 }} 
                    animate={{ x: x, y: y, rotate: [0, 180, 360] }} 
                    transition={{ duration, repeat: Infinity, ease: "linear" }} 
