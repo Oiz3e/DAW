@@ -10,9 +10,9 @@ import pace from '../assets/pace/pace.png'
 import materdei from '../assets/materdei/materdei.png'
 import wq from '../assets/wq/wq.jpg'
 import sodik from '../assets/sodik/sodik.png'
-import video1 from '../assets/videos/repanzz.mp4';
-import video2 from '../assets/videos/plunix.mp4';
-import video3 from '../assets/videos/handeriku.mp4';
+import video1 from '../assets/videos/Repanzz.mp4';
+import video2 from '../assets/videos/Plunix.mp4';
+import video3 from '../assets/videos/Handeriku.mp4';
 
 export const categories = [
   { id: 'dev', label: 'Developer', icon: <Code size={18} /> },
