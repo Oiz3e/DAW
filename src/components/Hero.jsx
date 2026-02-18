@@ -8,13 +8,13 @@ import profileImg from '../assets/profile.png';
 
 const Hero = () => {
   const { scrollY } = useScroll();
+  // OPTIMASI: Parallax effect (y1) tetep jalan, tapi Opacity dibuang biar foto ga ngilang
   const y1 = useTransform(scrollY, [0, 500], [0, 100]); 
-  const opacity = useTransform(scrollY, [0, 300], [1, 0]);
 
   return (
     <section id="home" className="relative min-h-[100dvh] flex items-center pt-28 md:pt-20 overflow-hidden font-sans bg-[#050505]">
       
-      {/* OPTIMASI: Background Glows raksasa DIMATIKAN di HP biar ga lag */}
+      {/* Background Glows (Desktop Only) */}
       <div className="hidden md:block absolute inset-0 pointer-events-none">
         <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-gradient-to-b from-blue-600/20 to-purple-600/20 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/3 mix-blend-screen" />
         <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-gradient-to-t from-orange-500/20 to-pink-500/20 rounded-full blur-[100px] translate-y-1/3 -translate-x-1/4 mix-blend-screen" />
@@ -69,15 +69,17 @@ const Hero = () => {
         </div>
 
         {/* Right Column: Visual/Image */}
-        <motion.div style={{ y: y1, opacity }} className="lg:col-span-5 relative h-[400px] sm:h-[500px] lg:h-[600px] flex items-center justify-center lg:justify-end mt-10 lg:mt-0">
+        <motion.div 
+          // FIX UTAMA: Hapus 'opacity' dari sini. Cuma pake 'y1' (parallax) aja.
+          style={{ y: y1 }} 
+          className="lg:col-span-5 relative h-[400px] sm:h-[500px] lg:h-[600px] flex items-center justify-center lg:justify-end mt-10 lg:mt-0"
+        >
           
-          {/* OPTIMASI: Backdrop-blur dimatikan di HP, diganti warna solid gelap */}
           <div className="absolute inset-0 bg-gradient-to-br from-[#111] md:from-white/10 to-transparent border border-white/10 rounded-[2rem] md:rounded-[40px] md:backdrop-blur-md -rotate-3 scale-90 md:scale-95 z-0 md:shadow-[0_0_40px_rgba(0,0,0,0.5)]" />
           
           <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1, delay: 0.4 }} className="relative z-10 w-full h-full flex items-end justify-center">
             <img src={profileImg} alt="Profile" className="w-[85%] md:w-full h-full object-contain object-bottom drop-shadow-[0_20px_50px_rgba(0,0,0,0.8)]" style={{ maskImage: 'linear-gradient(to bottom, black 80%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to bottom, black 80%, transparent 100%)' }} />
             
-            {/* OPTIMASI: Backdrop-blur Status Card dimatikan di HP */}
             <motion.div animate={{ y: [0, -10, 0] }} transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }} className="absolute left-2 sm:left-4 lg:-left-8 top-10 sm:top-1/4 bg-[#0a0a0a] md:bg-[#0a0a0a]/90 md:backdrop-blur-xl border border-white/20 p-3 sm:p-5 rounded-xl sm:rounded-2xl shadow-[0_0_30px_rgba(0,0,0,0.5)] max-w-[160px] sm:max-w-[220px]">
               <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
                 <div className="relative">
@@ -91,7 +93,6 @@ const Hero = () => {
               </p>
             </motion.div>
 
-            {/* Tech Stack Floating Chips */}
             <motion.div animate={{ y: [0, 10, 0] }} transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 1 }} className="absolute right-2 sm:right-4 lg:-right-4 bottom-10 sm:bottom-20 flex flex-col gap-2 sm:gap-3">
               {[
                 { name: 'React', color: 'border-blue-500/30 text-blue-300 bg-[#111] md:bg-blue-500/10' },
