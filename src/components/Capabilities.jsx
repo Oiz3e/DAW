@@ -228,7 +228,7 @@ const Capabilities = ({ setActiveTab }) => {
   });
 
   return (
-    <section className="py-24 relative font-sans bg-[#050505] min-h-screen selection:bg-orange-500/30 overflow-hidden">
+    <section id="capabilities" className="py-24 relative font-sans bg-[#050505] min-h-screen selection:bg-orange-500/30 overflow-hidden">
       <div className="max-w-[1440px] mx-auto px-6 md:px-20 relative z-10">
         
         <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-16 md:mb-24 gap-6 pt-10 pb-6 bg-gradient-to-b from-[#050505] to-transparent sticky top-0 md:relative backdrop-blur-xl z-50">

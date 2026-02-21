@@ -16,7 +16,8 @@ const Navbar = () => {
   }, []);
 
   const navLinks = [
-    { name: 'Home', href: '#home' },
+    { name: 'Origin', href: '#home' },  
+    { name: 'Core', href: '#capabilities' },
     { name: 'Multiverse', href: '#multiverse' },
     { name: 'Contact', href: '#contact' }
   ];
