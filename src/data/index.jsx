@@ -1,7 +1,12 @@
 /* eslint-disable no-unused-vars */
 /* cspell:disable */
 import React from 'react';
-import { Code, PenTool, Zap, Briefcase, GraduationCap, Users, Award, Heart } from 'lucide-react';
+// IMPORT IKON BARU YANG SPESIFIK BUAT TIMELINE
+import { 
+  Code, PenTool, Zap, Briefcase, Users, Award, Heart, 
+  MonitorSmartphone, Ticket, Layout, Smartphone, Gamepad2, 
+  Megaphone, Crown, HeartHandshake, Kanban, PlaneTakeoff 
+} from 'lucide-react';
 
 import rekt from '../assets/rekt/high.jpg'
 import ushare from '../assets/Ushare/Landing.jpg'
@@ -13,6 +18,14 @@ import sodik from '../assets/sodik/sodik.png'
 import video1 from '../assets/videos/Repanzz.mp4';
 import video2 from '../assets/videos/Plunix.mp4';
 import video3 from '../assets/videos/Handeriku.mp4';
+import thumb1 from '../assets/thumb/thumb1.jpg';
+import thumb2 from '../assets/thumb/thumb2.jpg';
+import thumb3 from '../assets/thumb/thumb3.jpg';
+
+import zara from '../assets/archive/zara.webp'
+import ga1 from '../assets/archive/ga1.webp'
+import ga2 from '../assets/archive/ga2.webp'
+import ev from '../assets/archive/ev.webp'
 
 export const categories = [
   { id: 'dev', label: 'Developer', icon: <Code size={18} /> },
@@ -97,8 +110,8 @@ export const devProjects = [
     desc: "Designed front-end and back-end systems for a flight ticketing platform. Built and deployed the service using Vercel.",
     image: sodik,
     tech: ['React', 'Vercel','Frontend Developer'],
-    link: 'https://online-ticket-fpu8igsvm-sidqigamers.vercel.app/', // Ganti dengan link Vercel Live Demo
-    github: 'https://github.com/sidqigamers/online-ticket' // Ganti dengan link Github Sodik
+    link: 'https://online-ticket-fpu8igsvm-sidqigamers.vercel.app/', 
+    github: 'https://github.com/sidqigamers/online-ticket' 
   }
 ];
 
@@ -112,6 +125,7 @@ export const creativeProjects = [
     role: 'Motion Designer',
     desc: "High-energy 2D animated intro with dynamic transitions tailored specifically to hook viewers for a YouTube gaming channel.",
     video: video1,
+    poster: thumb2,
     type: 'YouTube Intro',
     tech: ['After Effects'],
     link: 'https://www.instagram.com/p/DNf5CmWt2OX/',
@@ -122,7 +136,8 @@ export const creativeProjects = [
     title: 'Professional 2D Intro',
     role: 'Motion Designer',
     desc: "Clean and modern 2D typography animation designed to establish a strong and professional visual identity for tech reviewers.",
-    video: video2, // <-- Ganti pakai variabel video2
+    video: video2,
+    poster: thumb3,
     type: 'YouTube Intro',
     tech: ['After Effects'],
     link: 'https://www.instagram.com/p/DN25cxi2gjT/',
@@ -133,11 +148,58 @@ export const creativeProjects = [
     title: 'Professional 2D Intro',
     role: 'Motion Designer',
     desc: "High-energy 2D animated intro with dynamic transitions tailored specifically to hook viewers for a YouTube gaming channel.",
-    video: video3, // <-- Ganti pakai variabel video3
+    video: video3,
+    poster: thumb1,
     type: 'YouTube Intro',
     tech: ['After Effects'],
     link: 'https://www.instagram.com/p/DOORddSFNLf/',
     start: 6
+  }
+];
+
+// ==========================================
+// 2.5. DESIGN ARCHIVE DATA (Poster, UI/UX, PPT)
+// ==========================================
+export const designArchive = [
+  {
+    id: 'da1',
+    title: 'ZARA UI/UX',
+    role: 'UI Designer',
+    desc: 'A conceptual UI/UX revamp of ZARA e-commerce interface. Built entirely in Figma to explore immersive visual hierarchies and prototype advanced parallax scrolling interactions.',
+    image: zara, 
+    type: 'UI/UX Design',
+    tech: ['Figma', 'Prototyping'],
+    link: 'https://www.figma.com/proto/tlZDjW6bLHHDqzUW9sqERO/test-parallax-figma?node-id=1-2&starting-point-node-id=1%3A2' 
+  },
+  {
+    id: 'da2',
+    title: 'Hot Wheels Giveaway (Vol. 1)',
+    role: 'Freelance Visual Designer',
+    desc: 'Commissioned to design an engaging social media poster for a Hot Wheels giveaway. Utilized Photoshop for product masking and Figma for typography to maximize audience interaction.',
+    image: ga1,
+    type: 'Social Media Poster',
+    tech: ['Photoshop', 'Figma', 'Commission'],
+    link: 'https://www.figma.com/proto/npe3eeXZydinLY90AzzJc1/Giveaway?node-id=34-64&p=f&t=A9iHbsFwsPvVj61w-0&scaling=contain&content-scaling=fixed&page-id=0%3A1' 
+  },
+  {
+    id: 'da3',
+    title: 'Hot Wheels Giveaway (Vol. 2)',
+    role: 'Freelance Visual Designer',
+    desc: 'A parallel commission for a separate account running a similar giveaway campaign. Delivered a consistent, high-energy visual layout tailored to fit the specific client\'s audience.',
+    image: ga2,
+    type: 'Social Media Poster',
+    tech: ['Photoshop', 'Figma', 'Commission'],
+    link: 'https://www.figma.com/proto/npe3eeXZydinLY90AzzJc1/Giveaway?node-id=1-2&p=f&t=A9iHbsFwsPvVj61w-0&scaling=contain&content-scaling=fixed&page-id=0%3A1' 
+  },
+  {
+    id: 'da4',
+    title: 'Virtual Event Activation',
+    role: 'Freelance Visual Designer',
+    desc: 'Designed promotional assets for a virtual community event hosted within the Roblox metaverse. Captured the game vibrant aesthetic while maintaining a clean, engaging layout to maximize player participation.',
+    image: ev,
+    type: 'Event Poster',
+    tech: ['Photoshop', 'Figma', 'Commission'],
+    link: 'https://www.figma.com/proto/npe3eeXZydinLY90AzzJc1/Giveaway?node-id=1-2&p=f&t=A9iHbsFwsPvVj61w-0&scaling=contain&content-scaling=fixed&page-id=0%3A1' 
   }
 ];
 
@@ -150,16 +212,16 @@ export const timelineData = [
     title: "PT Rekatama Pola Sejahtera",
     role: "Full Stack Developer",
     desc: "Built a comprehensive company profile website to enhance the company's digital presence.",
-    icon: <Code size={16} />,
+    icon: <MonitorSmartphone size={16} />, // Multi-device icon
     color: "bg-blue-500",
-    category: "engineering" // <-- Tambahin ini
+    category: "engineering" 
   },
   {
     year: "Jun 2025 - Jul 2025",
     title: "Hotwheels Event",
     role: "PIC Event",
     desc: "Provided assistance at designated event stations, managed attendee inquiries, and supported smooth event operations through coordination with the organizing team.",
-    icon: <Users size={16} />,
+    icon: <Ticket size={16} />, // Ticket/Event icon
     color: "bg-red-500",
     category: "leadership"
   },
@@ -168,7 +230,7 @@ export const timelineData = [
     title: "EduVerse",
     role: "Developer & Designer",
     desc: "Simultaneously developed UI/UX for EduVerse.",
-    icon: <Code size={16} />,
+    icon: <Layout size={16} />, // UI/UX Layout icon
     color: "bg-pink-500",
     category: "engineering" 
   },
@@ -177,7 +239,7 @@ export const timelineData = [
     title: "USHARE",
     role: "Developer & Designer",
     desc: "Full Stack Android for USHARE.",
-    icon: <Code size={16} />,
+    icon: <Smartphone size={16} />, // Android app icon
     color: "bg-blue-500",
     category: "engineering" 
   },
@@ -186,7 +248,7 @@ export const timelineData = [
     title: "Holix Jump",
     role: "Game Developer",
     desc: "Designed and developed a 3D Unity game with custom mechanics.",
-    icon: <Zap size={16} />,
+    icon: <Gamepad2 size={16} />, // Gamepad icon
     color: "bg-orange-500",
     category: "engineering"
   },
@@ -195,7 +257,7 @@ export const timelineData = [
     title: "Infinite UMN 2024",
     role: "Public Relations",
     desc: "Designed engaging content and acted as key liaison. Maintained positive relationships with participants.",
-    icon: <Users size={16} />,
+    icon: <Megaphone size={16} />, // PR/Announce icon
     color: "bg-pink-500",
     category: "leadership"
   },
@@ -204,7 +266,7 @@ export const timelineData = [
     title: "Perkenalan Prodi Informatika",
     role: "Vice President",
     desc: "Led Visual & PR divisions. Trained leaders in public speaking and guided documentation teams.",
-    icon: <Award size={16} />,
+    icon: <Crown size={16} />, // VP/Leadership icon
     color: "bg-purple-500",
     category: "leadership"
   },
@@ -213,7 +275,7 @@ export const timelineData = [
     title: "Pace Delivery",
     role: "UI/UX Designer",
     desc: "Created intuitive UI/UX and interactive prototypes for food ordering app.",
-    icon: <PenTool size={16} />,
+    icon: <PenTool size={16} />, // Design tool icon
     color: "bg-yellow-500",
     category: "engineering"
   },
@@ -222,7 +284,7 @@ export const timelineData = [
     title: "Mentoring UMN",
     role: "Mentor Division",
     desc: "Guided new students' transition to university life for two consecutive periods.",
-    icon: <Heart size={16} />,
+    icon: <HeartHandshake size={16} />, // Mentoring/Help icon
     color: "bg-green-500",
     category: "leadership"
   },
@@ -231,7 +293,7 @@ export const timelineData = [
     title: "SMPK Mater Dei E-Learning",
     role: "Front End Developer",
     desc: "Designed and implemented user interfaces for online learning platform.",
-    icon: <Code size={16} />,
+    icon: <Code size={16} />, // Pure coding icon
     color: "bg-blue-500",
     category: "engineering"
   },
@@ -240,7 +302,7 @@ export const timelineData = [
     title: "WorkQuest",
     role: "Software Eng & PM",
     desc: "Managed project timeline and designed high-fidelity prototypes.",
-    icon: <Briefcase size={16} />,
+    icon: <Kanban size={16} />, // Project management icon
     color: "bg-indigo-500",
     category: "engineering"
   },
@@ -249,7 +311,7 @@ export const timelineData = [
     title: "Sodik Jalan-Jalan",
     role: "Full Stack Developer",
     desc: "Built ticketing platform for booking flights services using Vercel.",
-    icon: <Code size={16} />,
+    icon: <PlaneTakeoff size={16} />, // Flight/Travel icon
     color: "bg-blue-500",
     category: "engineering"
   }

@@ -2,12 +2,15 @@
 /* cspell:disable */
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import ColorThief from 'colorthief';
 import { 
   Terminal, PenTool, Users, ArrowRight, Star, ExternalLink, 
   Play, Code, Smartphone, Zap, Layout, Heart, Volume2, MessageCircle, Eye, Share2, ThumbsUp, Instagram, History,
-  Database, Gamepad2, Figma, Globe, Github, Palette
+  Database, Gamepad2, Figma, Globe, Github, Palette, Image as ImageIcon,
+  Monitor, Server, Camera, LayoutTemplate, Brush, Film, Briefcase, FileText, BadgeCheck, Component
 } from 'lucide-react';
-import { devProjects, creativeProjects } from '../data';
+// IMPORT data designArchive dari data.js
+import { devProjects, creativeProjects, designArchive } from '../data';
 
 // --- IMPORT ASSETS ---
 import plenoImg from '../assets/PPIF/pleno1.webp';
@@ -39,27 +42,50 @@ import popc from '../assets/videos/popularcontent.mp4';
 import infiniteProfile from '../assets/Infinite/pp.webp'; 
 import ppifProfile from '../assets/PPIF/pp.webp';     
 
-// --- HELPER FUNCTION: TECH ICONS ---
+// --- GET TECH ICON DIPERBARUI TOTAL! ---
 const getTechIcon = (tech) => {
   const t = tech.toLowerCase();
-  if (t.includes('react') || t.includes('web') || t.includes('vercel')) return <Globe size={16} className="text-cyan-400" />;
-  if (t.includes('firebase') || t.includes('database') || t.includes('sql')) return <Database size={16} className="text-yellow-500" />;
-  if (t.includes('android') || t.includes('kotlin') || t.includes('mobile')) return <Smartphone size={16} className="text-green-400" />;
-  if (t.includes('figma') || t.includes('design') || t.includes('ui') || t.includes('prototyping') || t.includes('photoshop') || t.includes('illustrator')) return <Figma size={16} className="text-pink-400" />;
-  if (t.includes('unity') || t.includes('game') || t.includes('c#')) return <Gamepad2 size={16} className="text-gray-300" />;
+  
+  // Dev & Web
+  if (t.includes('react')) return <Code size={16} className="text-cyan-400" />;
   if (t.includes('tailwind') || t.includes('css')) return <Palette size={16} className="text-teal-400" />;
-  if (t.includes('after effects') || t.includes('premiere') || t.includes('video')) return <Play size={16} className="text-purple-400" />;
-  if (t.includes('fullstack')) return <Code size={16} className="text-indigo-400" />;
-  return <Code size={16} className="text-blue-400" />;
+  if (t.includes('vercel') || t.includes('web')) return <Globe size={16} className="text-white" />;
+  if (t.includes('frontend')) return <Monitor size={16} className="text-blue-400" />;
+  if (t.includes('fullstack') || t.includes('system logic')) return <Server size={16} className="text-indigo-400" />;
+  
+  // Mobile
+  if (t.includes('android') || t.includes('mobile')) return <Smartphone size={16} className="text-green-500" />;
+  if (t.includes('kotlin')) return <Terminal size={16} className="text-purple-500" />;
+  
+  // Game
+  if (t.includes('unity') || t.includes('game')) return <Gamepad2 size={16} className="text-gray-200" />;
+  if (t.includes('c#')) return <Code size={16} className="text-green-400" />;
+  
+  // Database & Backend
+  if (t.includes('firebase') || t.includes('database')) return <Database size={16} className="text-yellow-500" />;
+  
+  // Design & UI/UX
+  if (t.includes('figma')) return <Figma size={16} className="text-pink-400" />;
+  if (t.includes('photoshop')) return <Camera size={16} className="text-blue-500" />;
+  if (t.includes('ui/ux') || t.includes('design') || t.includes('prototyping') || t.includes('layout')) return <LayoutTemplate size={16} className="text-orange-400" />;
+  if (t.includes('visual') || t.includes('art')) return <Brush size={16} className="text-purple-400" />;
+  
+  // Motion & Video
+  if (t.includes('after effects') || t.includes('video') || t.includes('motion')) return <Film size={16} className="text-purple-500" />;
+  if (t.includes('color grading')) return <Palette size={16} className="text-red-400" />;
+  
+  // Management, Logic & Other
+  if (t.includes('project management') || t.includes('sdlc') || t.includes('flow')) return <Briefcase size={16} className="text-amber-500" />;
+  if (t.includes('documentation')) return <FileText size={16} className="text-gray-300" />;
+  if (t.includes('commission')) return <BadgeCheck size={16} className="text-yellow-400" />;
+  
+  return <Component size={16} className="text-gray-400" />; 
 };
 
-// --- OPTIMIZED VIDEO PLAYER (CINEMATIC FADE-IN, 0% GLITCH) ---
-const SegmentedVideo = ({ src, start = 0, end = 9999, className }) => {
+// --- OPTIMIZED VIDEO PLAYER ---
+const SegmentedVideo = ({ src, poster, start = 0, end = 9999, className }) => {
   const videoRef = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
-  
-  // State baru: buat ngasih tau "Eh videonya udah mendarat di detik 8 belum?"
-  const [isReady, setIsReady] = useState(false); 
   
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -71,27 +97,14 @@ const SegmentedVideo = ({ src, start = 0, end = 9999, className }) => {
   }, []);
 
   useEffect(() => {
-    // Cuma play kalau videonya udah kelihatan DAN udah siap di detik 8
-    if (videoRef.current && isReady) {
+    if (videoRef.current) {
       if (isVisible) {
         videoRef.current.play().catch(() => {});
       } else {
         videoRef.current.pause(); 
       }
     }
-  }, [isVisible, isReady]);
-
-  const handleLoadedMetadata = () => {
-    if (videoRef.current) {
-      // 1. Video keload, langsung paksa pindah ke detik yang dituju
-      videoRef.current.currentTime = start;
-    }
-  };
-
-  const handleSeeked = () => {
-    // 2. Event ini otomatis kepanggil KALAU video sukses mendarat di detik tersebut
-    if (!isReady) setIsReady(true);
-  };
+  }, [isVisible]);
 
   const handleTimeUpdate = () => {
     if (videoRef.current && videoRef.current.currentTime >= end) {
@@ -107,19 +120,19 @@ const SegmentedVideo = ({ src, start = 0, end = 9999, className }) => {
     }
   };
 
+  // MANTRA SAKTI: Langsung potong URL dari server
+  const videoSrc = start > 0 ? `${src}#t=${start}` : src;
+
   return (
     <video 
       ref={videoRef} 
-      src={src} 
-      // 3. JURUSNYA DI SINI: Kalau belum ready (isReady = false), videonya transparan (opacity-0).
-      // Begitu ready, dia fade in (opacity-100) pelan-pelan selama 0.7 detik (duration-700)
-      className={`${className} transition-opacity duration-700 ease-out ${isReady ? 'opacity-100' : 'opacity-0'}`} 
+      src={videoSrc} 
+      poster={poster}
+      className={className || "w-full h-full object-cover"} 
       muted 
       playsInline 
       loop 
-      preload="auto"
-      onLoadedMetadata={handleLoadedMetadata}
-      onSeeked={handleSeeked}
+      preload="metadata"
       onTimeUpdate={handleTimeUpdate} 
       onEnded={handleEnded}
     />
@@ -176,9 +189,8 @@ const Carousel3D = () => {
           <motion.div key={item.id} initial={false} animate={position} variants={variants} transition={{ type: "spring", stiffness: 120, damping: 20 }} onClick={() => { if (index === activeIndex) window.open(item.link, '_blank'); else setActiveIndex(index); }} className="absolute w-[200px] md:w-[280px] aspect-[9/16] bg-black rounded-3xl md:rounded-[3rem] border-4 md:border-[8px] border-gray-800 overflow-hidden shadow-2xl transition-colors">
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-16 md:w-28 h-4 md:h-6 bg-gray-800 rounded-b-lg z-20" />
             
-            {/* HARD PERFORMANCE FIX: Hanya load 1 video di tengah buat HP */}
             {(position === 'center' || !isMobile) ? (
-              <video className="w-full h-full object-cover" autoPlay muted loop playsInline><source src={item.src} type="video/mp4" /></video>
+              <video className="w-full h-full object-cover" autoPlay muted loop playsInline preload="metadata"><source src={item.src} type="video/mp4" /></video>
             ) : (
               <div className="w-full h-full bg-[#0a0a0a]" />
             )}
@@ -200,11 +212,10 @@ const Carousel3D = () => {
 const Capabilities = ({ setActiveTab }) => {
   const [activeMode, setActiveMode] = useState('leadership');
   
-  // THE REAL PERFORMANCE HERO: State pendeteksi layar
   const [isMobile, setIsMobile] = useState(false);
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
-    handleResize(); // Cek awal
+    handleResize(); 
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
@@ -229,44 +240,61 @@ const Capabilities = ({ setActiveTab }) => {
 
   return (
     <section id="capabilities" className="py-24 relative font-sans bg-[#050505] min-h-screen selection:bg-orange-500/30 overflow-hidden">
+      
+      {/* JURUS SCROLLBAR: Target khusus "hide-nav-scroll" biar scrollbar gambar lain tetep aman! */}
+      <style dangerouslySetInnerHTML={{__html: `
+        .hide-nav-scroll::-webkit-scrollbar { display: none; }
+        .hide-nav-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+      `}} />
+
       <div className="max-w-[1440px] mx-auto px-6 md:px-20 relative z-10">
         
+        {/* --- HEADER & FILTERING --- */}
         <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-16 md:mb-24 gap-6 pt-10 pb-6 bg-gradient-to-b from-[#050505] to-transparent sticky top-0 md:relative backdrop-blur-xl z-50">
           <div className="relative flex-1">
             <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-2 tracking-tight">
               {activeMode === 'leadership' && <span>Leadership & <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-pink-500">Impact.</span></span>}
               {activeMode === 'dev' && <span>Engineering <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-500">Log.</span></span>}
-              {activeMode === 'creative' && <span>Visual <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">Gallery.</span></span>}
+              {activeMode === 'creative' && <span>Motion <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">Gallery.</span></span>}
+              {activeMode === 'archive' && <span>Design <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500">Archive.</span></span>}
             </h2>
             <p className="text-gray-400 text-sm md:text-base max-w-xl">
               {activeMode === 'leadership' && "Leading teams, mentoring, and executing vision."}
               {activeMode === 'dev' && "Turning complex logic into scalable applications."}
-              {activeMode === 'creative' && "Interfaces that work, visuals that speak."}
+              {activeMode === 'creative' && "Dynamic animations and high-energy visual identities."}
+              {activeMode === 'archive' && "A collection of UI/UX flows, layouts, and visual explorations."}
             </p>
           </div>
           
           <div className="w-full lg:w-auto mt-4 lg:mt-0 z-20">
-            <div className="flex flex-wrap items-center bg-white/5 p-1.5 rounded-2xl md:rounded-full border border-white/10 w-full gap-1 sm:gap-0">
-              {[
-                { id: 'leadership', icon: <Users size={14} />, label: 'Leadership' },
-                { id: 'dev', icon: <Code size={14} />, label: 'Engineering' },
-                { id: 'creative', icon: <PenTool size={14} />, label: 'Creative' },
-              ].map((mode) => (
-                <button
-                  key={mode.id}
-                  onClick={() => setActiveMode(mode.id)}
-                  className={`
-                    relative flex items-center justify-center gap-1.5 md:gap-2 px-2 sm:px-4 py-2.5 md:py-3 rounded-xl md:rounded-full text-[10px] sm:text-xs md:text-sm font-bold transition-colors duration-300 flex-1 min-w-[30%]
-                    ${activeMode === mode.id ? 'text-black' : 'text-gray-400 hover:text-white'}
-                  `}
-                >
-                  {activeMode === mode.id && (
-                    <motion.div layoutId="activeTabPill" className="absolute inset-0 bg-white rounded-xl md:rounded-full shadow-[0_0_20px_rgba(255,255,255,0.2)] z-[-1]" transition={{ type: "spring", stiffness: 400, damping: 30 }} />
-                  )}
-                  {mode.icon}
-                  <span className="whitespace-nowrap">{mode.label}</span>
-                </button>
-              ))}
+            <div className="flex flex-col items-center sm:items-end">
+              {/* Tambahin class hide-nav-scroll biar khusus elemen ini aja yang gak ada scrollbarnya */}
+              <div className="hide-nav-scroll flex flex-nowrap items-center bg-white/5 p-1.5 rounded-2xl md:rounded-full border border-white/10 w-full sm:w-auto overflow-x-auto snap-x mb-1 md:mb-0">
+                {[
+                  { id: 'leadership', icon: <Users size={14} />, label: 'Leadership' },
+                  { id: 'dev', icon: <Code size={14} />, label: 'Engineering' },
+                  { id: 'creative', icon: <Play size={14} />, label: 'Motion' },
+                  { id: 'archive', icon: <ImageIcon size={14} />, label: 'Archive' },
+                ].map((mode) => (
+                  <button
+                    key={mode.id}
+                    onClick={() => setActiveMode(mode.id)}
+                    className={`
+                      relative flex items-center justify-center gap-1.5 md:gap-2 px-4 py-2.5 md:py-3 rounded-xl md:rounded-full text-[11px] sm:text-xs md:text-sm font-bold transition-colors duration-300 flex-none snap-center
+                      ${activeMode === mode.id ? 'text-black' : 'text-gray-400 hover:text-white'}
+                    `}
+                  >
+                    {activeMode === mode.id && (
+                      <motion.div layoutId="activeTabPill" className="absolute inset-0 bg-white rounded-xl md:rounded-full shadow-[0_0_20px_rgba(255,255,255,0.2)] z-[-1]" transition={{ type: "spring", stiffness: 400, damping: 30 }} />
+                    )}
+                    {mode.icon}
+                    <span className="whitespace-nowrap">{mode.label}</span>
+                  </button>
+                ))}
+              </div>
+              <span className="text-[10px] text-gray-500 mt-1 animate-pulse sm:hidden flex items-center gap-1">
+                <ArrowRight size={10} /> Swipe for more
+              </span>
             </div>
           </div>
         </div>
@@ -278,6 +306,7 @@ const Capabilities = ({ setActiveTab }) => {
             {activeMode === 'leadership' && (
               <motion.div key="leadership" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.4 }} className="space-y-40">
                 
+                {/* PPIF Section */}
                 <div className="relative group">
                   {!isMobile && <div className="absolute -left-10 top-20 w-[400px] h-[400px] bg-purple-600/10 rounded-full blur-[120px] pointer-events-none transition-opacity duration-700 opacity-50 group-hover:opacity-100" />}
                   <div className="grid md:grid-cols-12 gap-8 items-start mb-12 relative z-10">
@@ -293,10 +322,11 @@ const Capabilities = ({ setActiveTab }) => {
                         ))}
                       </ul>
                     </div>
+                    {/* Menggunakan custom scrollbar */}
                     <div className="md:col-span-7 flex gap-5 overflow-x-auto pb-6 snap-x snap-mandatory scrollbar-purple transition-colors pt-4">
                       {[plenoImg, random4, random2, random5, random3, random6].map((img, i) => (
                         <div key={i} className="min-w-[85%] md:min-w-[350px] aspect-[4/5] rounded-[2rem] bg-[#111] border border-white/10 overflow-hidden relative group/card snap-center shadow-2xl hover:border-purple-500/30 transition-all duration-500">
-                          <img src={img} alt={`PPIF ${i}`} className="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700 opacity-90 group-hover/card:opacity-100" />
+                          <img src={img} alt={`PPIF ${i}`} loading="lazy" className="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700 opacity-90 group-hover/card:opacity-100" />
                           {!isMobile && <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-500" />}
                         </div>
                       ))}
@@ -305,18 +335,21 @@ const Capabilities = ({ setActiveTab }) => {
                   <div className="relative w-full aspect-video rounded-[2.5rem] overflow-hidden border border-white/10 group bg-[#111] shadow-[0_20px_50px_rgba(0,0,0,0.5)] mt-12 hover:border-purple-500/30 transition-colors duration-500">
                     <SegmentedVideo src={recapVideo} start={92} end={160} />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
-                    <div className="absolute bottom-0 left-0 p-8 md:p-12 w-full flex justify-between items-end">
+                    <div className="absolute bottom-0 left-0 p-4 sm:p-6 md:p-10 w-full flex justify-between items-end gap-2">
                       <div>
-                        <div className="inline-flex items-center gap-2 bg-purple-600/20 text-purple-400 px-3 py-1.5 rounded-full text-xs font-bold mb-4 border border-purple-500/20 backdrop-blur-md"><Volume2 size={12} /> OFFICIAL AFTERMOVIE</div>
-                        <h3 className="text-3xl md:text-4xl font-bold text-white mb-2">PPIF 2024 Recap</h3>
+                        <div className="inline-flex items-center gap-1.5 md:gap-2 bg-purple-600/20 text-purple-400 px-2.5 py-1 md:px-3 md:py-1.5 rounded-full text-[9px] sm:text-[10px] md:text-xs font-bold mb-1.5 md:mb-4 border border-purple-500/20 backdrop-blur-md">
+                          <Volume2 className="w-3 h-3 md:w-4 md:h-4" /> OFFICIAL AFTERMOVIE
+                        </div>
+                        <h3 className="text-xl sm:text-2xl md:text-4xl font-bold text-white mb-0 md:mb-2 leading-tight">PPIF 2024 Recap</h3>
                       </div>
-                      <a href="https://www.instagram.com/reel/DFM9v-wSOoU/" target="_blank" rel="noreferrer" className="flex items-center gap-3 bg-white text-black px-6 py-3 rounded-full font-bold hover:bg-purple-100 transition-all text-sm group/btn hover:shadow-[0_0_20px_rgba(255,255,255,0.4)]">
-                        <Play size={16} fill="black" /> <span className="hidden sm:inline">Watch Full</span><ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
+                      <a href="https://www.instagram.com/reel/DFM9v-wSOoU/" target="_blank" rel="noreferrer" className="flex items-center gap-2 md:gap-3 bg-white text-black px-4 py-2 md:px-6 md:py-3 rounded-full font-bold hover:bg-purple-100 transition-all text-[10px] md:text-sm group/btn hover:shadow-[0_0_20px_rgba(255,255,255,0.4)] shrink-0">
+                        <Play className="w-3 h-3 md:w-4 md:h-4" fill="black" /> <span className="hidden sm:inline">Watch Full</span><ArrowRight className="w-3 h-3 md:w-4 md:h-4 group-hover/btn:translate-x-1 transition-transform" />
                       </a>
                     </div>
                   </div>
                 </div>
 
+                {/* Infinite UMN Section */}
                 <div className="relative group">
                   {!isMobile && <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-orange-600/10 rounded-full blur-[150px] pointer-events-none transition-opacity duration-700 opacity-50 group-hover:opacity-100" />}
                   <div className="grid md:grid-cols-12 gap-12 items-center relative z-10">
@@ -336,6 +369,7 @@ const Capabilities = ({ setActiveTab }) => {
                   </div>
                 </div>
 
+                {/* Mentor Section */}
                 <div className="relative group">
                   {!isMobile && <div className="absolute -right-10 top-20 w-[400px] h-[400px] bg-green-600/10 rounded-full blur-[120px] pointer-events-none transition-opacity duration-700 opacity-50 group-hover:opacity-100" />}
                   <div className="grid md:grid-cols-12 gap-8 items-start mb-12 relative z-10">
@@ -351,10 +385,11 @@ const Capabilities = ({ setActiveTab }) => {
                         ))}
                       </ul>
                     </div>
+                    {/* Menggunakan custom scrollbar */}
                     <div className="md:col-span-7 flex gap-5 overflow-x-auto pb-6 snap-x snap-mandatory scrollbar-green transition-colors pt-4">
                       {[random11, random7, random10, random13, random14, random15, random8, random9, random12].map((img, i) => (
                         <div key={i} className="min-w-[85%] md:min-w-[350px] aspect-[4/5] rounded-[2rem] bg-[#111] border border-white/10 overflow-hidden relative group/card snap-center shadow-2xl hover:border-green-500/30 transition-all duration-500">
-                          <img src={img} alt="Mentoring" className="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700 opacity-90 group-hover/card:opacity-100" />
+                          <img src={img} alt="Mentoring" loading="lazy" className="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700 opacity-90 group-hover/card:opacity-100" />
                           {!isMobile && <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-500" />}
                         </div>
                       ))}
@@ -363,15 +398,18 @@ const Capabilities = ({ setActiveTab }) => {
                   <div className="relative w-full aspect-video rounded-[2.5rem] overflow-hidden border border-white/10 group bg-[#111] shadow-[0_20px_50px_rgba(0,0,0,0.5)] hover:border-green-500/30 transition-colors duration-500 mt-12">
                     <SegmentedVideo src={recapVideom} start={0} end={45} /> 
                     <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
-                    <div className="absolute bottom-0 left-0 p-8 md:p-12 w-full flex justify-between items-end">
+                    <div className="absolute bottom-0 left-0 p-4 sm:p-6 md:p-10 w-full flex justify-between items-end gap-2">
                       <div>
-                        <div className="inline-flex items-center gap-2 bg-green-600/20 text-green-400 px-3 py-1.5 rounded-full text-xs font-bold mb-4 border border-green-500/20 backdrop-blur-md"><Users size={12} /> JOURNEY HIGHLIGHT</div>
-                        <h3 className="text-3xl md:text-4xl font-bold text-white mb-2">Mentoring Moments</h3>
+                        <div className="inline-flex items-center gap-1.5 md:gap-2 bg-green-600/20 text-green-400 px-2.5 py-1 md:px-3 md:py-1.5 rounded-full text-[9px] sm:text-[10px] md:text-xs font-bold mb-1.5 md:mb-4 border border-green-500/20 backdrop-blur-md">
+                          <Users className="w-3 h-3 md:w-4 md:h-4" /> JOURNEY HIGHLIGHT
+                        </div>
+                        <h3 className="text-xl sm:text-2xl md:text-4xl font-bold text-white mb-0 md:mb-2 leading-tight">Mentoring Moments</h3>
                       </div>
                     </div>
                   </div>
                 </div>
 
+                {/* Hotwheels Section */}
                 <div className="relative group pt-12">
                   {!isMobile && <div className="absolute top-1/2 left-0 w-[500px] h-[500px] bg-red-600/10 rounded-full blur-[150px] -translate-y-1/2 pointer-events-none transition-opacity duration-700 opacity-50 group-hover:opacity-100" />}
 
@@ -394,17 +432,18 @@ const Capabilities = ({ setActiveTab }) => {
                     
                     <div className="md:col-span-7 flex gap-4 md:gap-8 relative z-10 pt-10 px-4 md:px-0">
                       <div className="w-1/2 rounded-[2.5rem] overflow-hidden border border-white/10 aspect-[4/5] group/card shadow-[0_0_40px_rgba(239,68,68,0.1)] relative hover:border-red-500/30 hover:-translate-y-2 transition-all duration-500">
-                        <img src={hot1} alt="Hotwheels 1" className="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700" />
+                        <img src={hot1} alt="Hotwheels 1" loading="lazy" className="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700" />
                         {!isMobile && <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-500" />}
                       </div>
                       <div className="w-1/2 rounded-[2.5rem] overflow-hidden border border-white/10 aspect-[4/5] group/card shadow-[0_0_40px_rgba(239,68,68,0.1)] mt-16 md:mt-24 relative hover:border-red-500/30 hover:-translate-y-2 transition-all duration-500">
-                        <img src={hot2} alt="Hotwheels 2" className="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700" />
+                        <img src={hot2} alt="Hotwheels 2" loading="lazy" className="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700" />
                         {!isMobile && <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-500" />}
                       </div>
                     </div>
                   </div>
                 </div>
 
+                {/* Managed Accounts Section */}
                 <div className="relative py-24 md:py-32 mt-20 overflow-hidden rounded-[2rem] md:rounded-[3rem] border border-white/5 bg-[#0a0a0a]">
                   {!isMobile && (
                     <div className="absolute inset-0 pointer-events-none">
@@ -422,7 +461,7 @@ const Capabilities = ({ setActiveTab }) => {
                      <a href="https://www.instagram.com/infinite.umn/" target="_blank" rel="noreferrer" className="group relative bg-[#111] backdrop-blur-md border border-white/5 rounded-[2rem] p-6 md:p-10 hover:bg-white/[0.02] hover:border-orange-500/30 transition-all duration-500 overflow-hidden flex flex-col md:flex-row gap-6 md:gap-8 items-center hover:-translate-y-2 hover:shadow-[0_20px_50px_rgba(249,115,22,0.1)]">
                         <div className="absolute -top-10 -right-10 opacity-[0.02] group-hover:opacity-10 transition-opacity duration-500 rotate-12 group-hover:rotate-0"><Instagram size={200} /></div>
                         <div className="relative w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden border-4 border-[#111] outline outline-2 outline-orange-500/50 shrink-0 shadow-[0_0_30px_rgba(249,115,22,0.2)] group-hover:outline-orange-500 transition-all duration-500">
-                           <img src={infiniteProfile} alt="Infinite Profile" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                           <img src={infiniteProfile} loading="lazy" alt="Infinite Profile" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                         </div>
                         <div className="text-center md:text-left relative z-10">
                            <span className="text-orange-400 font-bold tracking-widest text-[10px] md:text-xs uppercase mb-2 bg-orange-500/10 inline-block px-3 py-1 rounded-md">PR & Creative Lead</span>
@@ -435,7 +474,7 @@ const Capabilities = ({ setActiveTab }) => {
                      <a href="https://www.instagram.com/ppif_umn/" target="_blank" rel="noreferrer" className="group relative bg-[#111] backdrop-blur-md border border-white/5 rounded-[2rem] p-6 md:p-10 hover:bg-white/[0.02] hover:border-purple-500/30 transition-all duration-500 overflow-hidden flex flex-col md:flex-row gap-6 md:gap-8 items-center hover:-translate-y-2 hover:shadow-[0_20px_50px_rgba(168,85,247,0.1)]">
                         <div className="absolute -top-10 -right-10 opacity-[0.02] group-hover:opacity-10 transition-opacity duration-500 rotate-12 group-hover:rotate-0"><Users size={200} /></div>
                         <div className="relative w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden border-4 border-[#111] outline outline-2 outline-purple-500/50 shrink-0 shadow-[0_0_30px_rgba(168,85,247,0.2)] group-hover:outline-purple-500 transition-all duration-500">
-                           <img src={ppifProfile} alt="PPIF Profile" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                           <img src={ppifProfile} loading="lazy" alt="PPIF Profile" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                         </div>
                         <div className="text-center md:text-left relative z-10">
                            <span className="text-purple-400 font-bold tracking-widest text-[10px] md:text-xs uppercase mb-2 bg-purple-500/10 inline-block px-3 py-1 rounded-md">Vice President</span>
@@ -467,9 +506,9 @@ const Capabilities = ({ setActiveTab }) => {
                     <div className="w-full rounded-[2rem] bg-gradient-to-br from-[#0c0e12] to-[#050505] border border-white/[0.05] p-2 md:p-4 relative overflow-hidden shadow-xl group-hover:border-blue-500/20 group-hover:shadow-[0_0_40px_rgba(59,130,246,0.1)] transition-all duration-500">
                        {!isMobile && <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60%] h-[60%] bg-blue-500/10 rounded-full blur-[100px] pointer-events-none group-hover:bg-blue-500/20 transition-colors duration-700 z-0" />}
                        <div className="relative w-full aspect-video rounded-xl overflow-hidden border border-white/5 bg-[#050505] flex items-center justify-center">
-                         {!isMobile && <img src={item.image} alt="" className="absolute inset-0 w-full h-full object-cover scale-110 blur-2xl opacity-40 group-hover:opacity-60 transition-opacity duration-700 pointer-events-none z-0" aria-hidden="true" />}
+                         <img src={item.image} alt="" loading="lazy" className="absolute inset-0 w-full h-full object-contain md:object-cover scale-110 blur-2xl opacity-40 group-hover:opacity-60 transition-opacity duration-700 pointer-events-none z-0" aria-hidden="true" />
                          <div className="absolute inset-0 bg-black/30 z-0 pointer-events-none" />
-                         <img src={item.image} alt={item.title} className="w-full h-full object-cover md:object-contain drop-shadow-[0_0_40px_rgba(0,0,0,0.6)] group-hover:scale-[1.02] transition-transform duration-700 ease-out relative z-10" />
+                         <img src={item.image} alt={item.title} loading="lazy" className="w-full h-full object-contain drop-shadow-[0_0_40px_rgba(0,0,0,0.6)] group-hover:scale-[1.02] transition-transform duration-700 ease-out relative z-10" />
                        </div>
                     </div>
 
@@ -494,7 +533,7 @@ const Capabilities = ({ setActiveTab }) => {
               </motion.div>
             )}
 
-            {/* === CREATIVE MODE === */}
+            {/* === CREATIVE MODE (VIDEO ONLY) === */}
             {activeMode === 'creative' && (
               <motion.div key="creative" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.4 }} className="space-y-24 pb-20 mt-10">
                 {creativeProjects.map((item, i) => (
@@ -513,33 +552,25 @@ const Capabilities = ({ setActiveTab }) => {
                        {!isMobile && <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[50%] h-[50%] bg-purple-500/10 rounded-full blur-[80px] pointer-events-none group-hover:bg-purple-500/20 transition-colors duration-700 z-0" />}
                        
                        <div className="relative w-full aspect-video rounded-xl md:rounded-2xl overflow-hidden border border-white/5 bg-black flex items-center justify-center shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
-                         {item.video ? (
                            <>
-                             {/* Double Video Shadow cuma diload di PC */}
                              {!isMobile && (
                                <SegmentedVideo 
                                  src={item.video} 
                                  start={item.start || 0} 
                                  end={item.end || 9999} 
-                                 className="absolute inset-0 w-full h-full object-cover scale-110 blur-2xl opacity-30 group-hover:opacity-50 transition-opacity duration-700 pointer-events-none z-0"
+                                 className="absolute inset-0 w-full h-full object-contain md:object-cover scale-110 blur-2xl opacity-30 group-hover:opacity-50 transition-opacity duration-700 pointer-events-none z-0"
                                />
                              )}
                              <div className="absolute inset-0 bg-black/40 z-0 pointer-events-none" />
                              
                              <SegmentedVideo 
-                               src={item.video} 
+                               src={item.video}
+                               poster={item.poster}
                                start={item.start || 0} 
                                end={item.end || 9999} 
-                               className="w-full h-full object-cover md:object-contain drop-shadow-[0_0_40px_rgba(0,0,0,0.8)] transition-transform duration-700 relative z-10" 
+                               className="w-full h-full object-contain drop-shadow-[0_0_40px_rgba(0,0,0,0.8)] transition-transform duration-700 relative z-10" 
                              />
                            </>
-                         ) : (
-                           <>
-                             {!isMobile && <img src={item.image} alt="" className="absolute inset-0 w-full h-full object-cover scale-110 blur-2xl opacity-30 group-hover:opacity-50 transition-opacity duration-700 pointer-events-none z-0" aria-hidden="true" />}
-                             <div className="absolute inset-0 bg-black/40 z-0 pointer-events-none" />
-                             <img src={item.image} alt={item.title} className="w-full h-full object-cover md:object-contain drop-shadow-[0_0_40px_rgba(0,0,0,0.8)] transition-transform duration-700 relative z-10" />
-                           </>
-                         )}
                        </div>
                     </div>
 
@@ -569,6 +600,57 @@ const Capabilities = ({ setActiveTab }) => {
               </motion.div>
             )}
 
+            {/* === DESIGN ARCHIVE MODE === */}
+            {activeMode === 'archive' && (
+              <motion.div key="archive" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.4 }} className="space-y-24 pb-20 mt-10">
+                {designArchive.map((item, i) => (
+                  <div key={i} className="flex flex-col group relative">
+                    
+                    <div className="mb-6">
+                       <div className="flex items-center gap-3 mb-3">
+                          <div className="h-[2px] w-6 bg-yellow-500 shadow-[0_0_8px_rgba(234,179,8,0.8)]" />
+                          <span className="text-yellow-500 text-xs font-bold tracking-widest uppercase">{item.role}</span>
+                       </div>
+                       <h3 className="text-3xl md:text-4xl font-bold text-gray-200 mb-3 group-hover:text-white transition-colors">{item.title}</h3>
+                       <p className="text-gray-400 text-sm md:text-base leading-relaxed max-w-3xl">{item.desc}</p>
+                    </div>
+
+                    <div className="w-full rounded-[1.5rem] md:rounded-[2rem] bg-[#0A0A0A] border border-white/10 p-2 md:p-3 relative overflow-hidden shadow-xl group-hover:border-yellow-500/30 transition-all duration-500">
+                       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[50%] h-[50%] bg-yellow-500/10 rounded-full blur-[80px] pointer-events-none group-hover:bg-yellow-500/20 transition-colors duration-700 z-0" />
+                       
+                       <div className="relative w-full aspect-video rounded-xl md:rounded-2xl overflow-hidden border border-white/5 bg-black flex items-center justify-center shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
+                          <img src={item.image} alt="" loading="lazy" className="absolute inset-0 w-full h-full object-contain md:object-cover scale-110 blur-2xl opacity-30 group-hover:opacity-50 transition-opacity duration-700 pointer-events-none z-0" aria-hidden="true" />
+                          <div className="absolute inset-0 bg-black/40 z-0 pointer-events-none" />
+                          <img src={item.image} alt={item.title} loading="lazy" className="w-full h-full object-contain drop-shadow-[0_0_40px_rgba(0,0,0,0.8)] transition-transform duration-700 relative z-10" />
+                       </div>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-5 gap-4">
+                       <div className="flex flex-wrap gap-2 md:gap-3">
+                         {item.tech.map((t, idx) => (
+                            <div key={idx} className="flex items-center gap-1.5 md:gap-2 bg-white/5 border border-white/10 px-3 py-1.5 md:px-4 md:py-2 rounded-lg hover:bg-white/10 transition-colors cursor-default">
+                              {getTechIcon(t)}<span className="text-gray-300 font-medium text-[10px] md:text-xs tracking-wide">{t}</span>
+                            </div>
+                         ))}
+                       </div>
+                       
+                       <div className="flex items-center gap-3 w-full sm:w-auto">
+                         <div className="px-3 py-1.5 md:px-4 md:py-2 bg-transparent border border-yellow-500/30 rounded-lg text-yellow-500 font-bold tracking-widest uppercase text-[10px] md:text-xs text-center flex-1 sm:flex-none">
+                            {item.type}
+                         </div>
+                         {item.link && item.link !== '#' && (
+                           <a href={item.link} target="_blank" rel="noreferrer" className="flex-1 sm:flex-none flex justify-center items-center gap-2 bg-yellow-600 hover:bg-yellow-500 text-black px-4 py-1.5 md:px-5 md:py-2 rounded-lg font-bold text-xs md:text-sm transition-colors shadow-[0_0_15px_rgba(234,179,8,0.3)]">
+                             <ExternalLink size={14} fill="currentColor" /> Preview
+                           </a>
+                         )}
+                       </div>
+                    </div>
+
+                  </div>
+                ))}
+              </motion.div>
+            )}
+
           </AnimatePresence>
         </div>
 
@@ -576,7 +658,6 @@ const Capabilities = ({ setActiveTab }) => {
         <div className="mt-20 md:mt-40 relative py-24 md:py-40 overflow-hidden w-full rounded-3xl md:rounded-none">
           <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
              
-             {/* OPTIMASI: Efek muter-muter raksasa dihapus total pas di HP */}
              {!isMobile && (
                <>
                  <div className="absolute w-[300px] md:w-[600px] h-[300px] md:h-[600px] bg-purple-600/10 rounded-full blur-[80px] md:blur-[150px] animate-pulse-slow" />
